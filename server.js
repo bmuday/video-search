@@ -11,7 +11,6 @@ const db = require("./db");
 // Middlewares
 
 app.use(express.json());
-//app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
 // HTTP Request Logger
@@ -30,19 +29,6 @@ app.use("/api/tags", tagsRoutes);
 
 /* const usersRoutes = require("./views/users");
 app.use("/api/users"); */
-
-/* 
-// For deployment
-// process.env.NODE_ENV => production, development or undefined
-
-if (process.env.NODE_ENV === "production") {
-    // serve static content
-    // npm run build
-    app.use(express.static("client/build"));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(__dirname, "client/build/index.html"));
-    });
-  } */
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}...`);

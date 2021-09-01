@@ -25,7 +25,11 @@ const getTags = async (req, res) => {
 // Get all videos related to a tag
 const getTagVideos = async (req, res) => {
   try {
-    const TagVideos = await pool.query("select name from Video join on;"); //TODO:
+    const { id } = req.params;
+    const TagVideos = await pool.query(
+      "select name from Video where id in (select video_id from Video_tag where tag_id=$1);",
+      [id]
+    ); //TODO:
     res.send(TagVideos.rows);
     console.log("GetTagVideos Request");
   } catch (err) {

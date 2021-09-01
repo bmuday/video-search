@@ -13,7 +13,7 @@ router.post("/", createTag);
 router.get("/", getTags);
 
 // get all videos related to a tag
-router.get("/", getTagVideos);
+router.get("/:id/videos", getTagVideos);
 
 // delete a tag
 router.delete("/:id", deleteTag);
