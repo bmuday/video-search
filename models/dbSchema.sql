@@ -20,10 +20,28 @@ create table Video_tag(
     tag_id int not null,
     CONSTRAINT fk_video
       FOREIGN KEY(video_id) 
-	  REFERENCES video(id),
+	  REFERENCES Video(id),
     CONSTRAINT fk_tag
       FOREIGN KEY(tag_id) 
-	  REFERENCES tag(id)
+	  REFERENCES Tag(id)
+);
+
+create table Users(
+    id int unique generated always as identity,
+    email varchar(50) unique not null,
+    password varchar(200) not null
+);
+
+create table Favorite(
+    id int unique generated always as identity,
+    users_id int not null,
+    video_id int not null,
+    CONSTRAINT fk_users
+      FOREIGN KEY(users_id) 
+	  REFERENCES Users(id),
+    CONSTRAINT fk_video
+      FOREIGN KEY(video_id) 
+	  REFERENCES Video(id)
 );
 
 /* BEGIN;

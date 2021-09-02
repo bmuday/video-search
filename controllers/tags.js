@@ -29,7 +29,7 @@ const getTagVideos = async (req, res) => {
     const TagVideos = await pool.query(
       "select name from Video where id in (select video_id from Video_tag where tag_id=$1);",
       [id]
-    ); //TODO:
+    );
     res.send(TagVideos.rows);
     console.log("GetTagVideos Request");
   } catch (err) {

@@ -1,19 +1,23 @@
 const express = require("express");
 const app = express();
-const PORT = process.env.PORT || 5000;
-const logger = require("morgan");
-const cors = require("cors");
-const path = require("path");
+
+require("dotenv").config();
+const PORT = process.env.server_port;
 
 // Database connection
 const db = require("./db");
 
 // Middlewares
-
 app.use(express.json());
+
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
+
+const cors = require("cors");
 app.use(cors());
 
 // HTTP Request Logger
+const logger = require("morgan");
 app.use(logger("tiny"));
 
 // Route Middlewares
@@ -27,9 +31,13 @@ app.use("/api/videos", videosRoutes);
 const tagsRoutes = require("./views/tags");
 app.use("/api/tags", tagsRoutes);
 
-/* const usersRoutes = require("./views/users");
-app.use("/api/users"); */
+const usersRoutes = require("./views/users");
+app.use("/api/users", usersRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}...`);
 });
+
+module.exports = {
+  PORT,
+};
