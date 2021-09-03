@@ -1,15 +1,5 @@
 const pool = require("../db");
 
-//TODO: // vérifier si un tag existe avant de pouvoir l'ajouter à une video et inversement -> sinon erreur + renvoyer liste tags, videos
-// Bonus 1 : rechercher des vidéos par tags
-//TODO: Bonus 2 : pagination de la liste des vidéos
-// Bonus 3 : un fichier docker-compose pour lancer le projet et l'ensemble des dépendances
-// Bonus 4 : un modèle user (email, password) avec les services d'authentification (signup, login, logout)
-// Bonus 5 : un user peut ajouter des vidéos dans une table de favoris et un user ne peut pas voir les favoris des autres users
-//TODO: Bonus 6 : un service elasticsearch pour l'indexation et la recherche des vidéos par mots-clés (indexation du nom, de la description et des tags associés à une vidéo)
-//TODO: Bonus 7 : configurer un point d’accès graphql (avec Apollo) permettant de récupérer la liste des videos et une vidéo par son id. Les vidéos doivent pouvoir être retournées avec les tags associés.
-//TODO: Bonus 8 : la page détails d’une vidéo doit pouvoir être mise en cache par le navigateur et par un CDN pendant 5 minutes, décrire la stratégie permettant de réaliser cette demande et mettre en place les modifications nécessaires dans le code
-
 // Create a video
 const createVideo = async (req, res) => {
   try {
@@ -21,7 +11,7 @@ const createVideo = async (req, res) => {
     res.send(newVideo.rows[0]);
     console.log("New video created");
   } catch (err) {
-    console.log(err.message);
+    res.status(500).send(err.message);
   }
 };
 
@@ -37,7 +27,7 @@ const getVideos = async (req, res) => {
     res.send(allVideos.rows);
     console.log("GetVideos Request");
   } catch (err) {
-    console.log(err.message);
+    res.status(500).send(err.message);
   }
 };
 
@@ -49,7 +39,7 @@ const getVideo = async (req, res) => {
     res.send(video.rows[0]);
     console.log("GetVideo Request");
   } catch (err) {
-    console.log(err.message);
+    res.status(500).send(err.message);
   }
 };
 
@@ -65,7 +55,7 @@ const updateVideo = async (req, res) => {
     res.send(updatedVideo.rows[0]);
     console.log(`Video ${id} updated`);
   } catch (err) {
-    console.log(err.message);
+    res.status(500).send(err.message);
   }
 };
 
@@ -80,7 +70,7 @@ const deleteVideo = async (req, res) => {
     res.send(deletedVideo.rows[0]);
     console.log(`Video ${id} deleted`);
   } catch (err) {
-    console.log(err.message);
+    res.status(500).send(err.message);
   }
 };
 
@@ -91,7 +81,7 @@ const deleteVideos = async (req, res) => {
     res.send(deletedVideos.rows);
     console.log(`All videos have been deleted.`);
   } catch (err) {
-    console.log(err.message);
+    res.status(500).send(err.message);
   }
 };
 
@@ -111,7 +101,7 @@ const addVideoTags = async (req, res) => {
     res.send(videoTags);
     console.log("AddVideoTags Request");
   } catch (err) {
-    console.log(err.message);
+    res.status(500).send(err.message);
   }
 };
 
@@ -126,7 +116,7 @@ const getVideoTags = async (req, res) => {
     res.send(videoTags.rows);
     console.log("GetVideoTags Request");
   } catch (err) {
-    console.log(err.message);
+    res.status(500).send(err.message);
   }
 };
 
@@ -146,7 +136,7 @@ const deleteVideoTags = async (req, res) => {
     res.send(videoTags);
     console.log("DeleteVideoTags Request");
   } catch (err) {
-    console.log(err.message);
+    res.status(500).send(err.message);
   }
 };
 

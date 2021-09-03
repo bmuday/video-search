@@ -32,15 +32,6 @@ router.get("/", getVideos);
 // get a video
 router.get("/:id", getVideo);
 
-// add one or many tags to a video
-router.post("/:id/tags", addVideoTags);
-
-// delete one or many tags related to a video
-router.delete("/:id/tags", deleteVideoTags);
-
-// get all tags related to a video
-router.get("/:id/tags", getVideoTags);
-
 // update a video
 router.patch("/:id", updateVideo);
 
@@ -49,5 +40,14 @@ router.delete("/:id", deleteVideo);
 
 // delete all videos
 router.delete("/", deleteVideos);
+
+// add one or many tags to a video
+router.post("/:id/tags", addVideoTags);
+
+// get all tags related to a video
+router.get("/:id/tags", getVideoTags);
+
+// delete one or many tags related to a video
+router.delete("/:id/tags", deleteVideoTags);
 
 module.exports = router;

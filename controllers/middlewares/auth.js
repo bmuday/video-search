@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const port = process.env.server_port;
+const pool = require("../../db");
 
 const requireAuth = (req, res, next) => {
   const token = req.cookies.jwt;
@@ -12,13 +12,13 @@ const requireAuth = (req, res, next) => {
         console.error(err.message);
         res.json("Invalid token, please login");
       } else {
-        console.log("decodedToken:", decodedToken);
         // Next middleware
         next();
       }
     });
   } else {
-    res.json("Invalid token, please login");
+    console.log("No token");
+    res.json("Please login");
   }
 };
 
@@ -27,18 +27,31 @@ const checkUser = (req, res, next) => {
   const token = req.cookies.jwt;
 
   if (token) {
-    jwt.verify(token, process.env.secretkey, (err, decodedToken) => {
+    jwt.verify(token, process.env.secretkey, async (err, decodedToken) => {
       if (err) {
-        console.error(err.message);
+        console.log(err.message);
+        res.locals.user = null;
         // Next middleware
         next();
       } else {
-        // retrieve user infos
-        // Next middleware
-        next();
+        try {
+          // retrieve user infos
+          const user = await pool.query("select * from Users where id=$1", [
+            decodedToken.user.id,
+          ]);
+          res.locals.user = user.rows[0];
+          // Next middleware
+          next();
+        } catch (err) {
+          console.log(err.message);
+        }
       }
     });
   } else {
+    console.log("No token");
+    res.locals.user = null;
+    // Next middleware
+    next();
   }
 };
 

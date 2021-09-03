@@ -32,7 +32,7 @@ create table Users(
     password varchar(200) not null
 );
 
-create table Favorite(
+create table Favorite_video(
     id int unique generated always as identity,
     users_id int not null,
     video_id int not null,

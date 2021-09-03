@@ -1,7 +1,6 @@
 const pool = require("../db");
 const bcrypt = require("bcrypt");
 const jwtGenerator = require("./middlewares/jwtGenerator");
-const cookieParser = require("cookie-parser");
 
 const signup = async (req, res) => {
   try {
@@ -27,10 +26,10 @@ const signup = async (req, res) => {
 
     // generate token
     const id = newUser.rows[0].id;
-    const maxAge = 5 * 60 * 60; // in seconds
+    const maxAge = 15 * 60; // in seconds
     const token = jwtGenerator(id, maxAge);
-    res.cookie("jwt", token, { httpOnly: true, maxAge: 1000 * 60 * 5 }); // expires in 5min
-    res.json(`User logged in for ${maxAge} with token ${token}`);
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // expires in 15min
+    res.json(`User logged in with token ${token}`);
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -53,12 +52,12 @@ const login = async (req, res) => {
 
     // generate token
     const id = user.rows[0].id;
-    const maxAge = 1000 * 60 * 5;
+    const maxAge = 15 * 60;
     const token = jwtGenerator(id, maxAge);
-    res.cookie("jwt", token, { httpOnly: true, maxAge }); // in milliseconds, expires in 5min
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // in milliseconds, expires in 15min
     res.json(`User logged in with token ${token}`);
   } catch (err) {
-    console.log(err.message);
+    res.status(500).send(err.message);
   }
 };
 
@@ -67,24 +66,66 @@ const logout = async (req, res) => {
   res.json("User logged out");
 };
 
-const accessFavorites = async (req, res) => {
-  /* try {
-    const { description } = req.body;
-    const newuser = await pool.query(
-      "insert into user(description) values($1) returning *;",
-      [description]
-    );
-    res.send(newuser.rows[0]);
-    console.log("New user created");
+const addFavoriteVideos = async (req, res) => {
+  try {
+    const { id } = res.locals.user;
+    const { videoNames } = req.body;
+
+    let favoriteVideos = [];
+    for (videoName of videoNames) {
+      let favoriteVideo = await pool.query(
+        "insert into Favorite_video(users_id, video_id) (select $1, id from Video where name=$2) returning *",
+        [id, videoName]
+      );
+      favoriteVideos.push(favoriteVideo.rows[0]);
+    }
+    console.log("AddFavoriteVideos Request");
+    res.send(favoriteVideos);
   } catch (err) {
-    console.log(err.message);
-  } */
-  res.json("accessFavorites");
+    res.status(500).send(err.message);
+  }
+};
+
+const getFavoriteVideos = async (req, res) => {
+  try {
+    const { id } = res.locals.user;
+    const favoriteVideos = await pool.query(
+      "select name from Video where id in (select video_id from Favorite_video where users_id=$1)",
+      [id]
+    );
+    console.log("GetFavoriteVideos Request");
+    res.send(favoriteVideos.rows);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+};
+
+const deleteFavoriteVideos = async (req, res) => {
+  try {
+    const { id } = res.locals.user;
+    const { videoNames } = req.body;
+
+    let favoriteVideos = [];
+    for (videoName of videoNames) {
+      let favoriteVideo = await pool.query(
+        "delete from Favorite_video where users_id=$1 and video_id in (select id from Video where name=$2) returning *",
+        [id, videoName]
+      );
+      favoriteVideos.push(favoriteVideo.rows[0]);
+    }
+    console.log("DeleteFavoriteVideos Request");
+    console.log(favoriteVideos);
+    res.send(favoriteVideos);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 };
 
 module.exports = {
   signup,
   login,
   logout,
-  accessFavorites,
+  addFavoriteVideos,
+  getFavoriteVideos,
+  deleteFavoriteVideos,
 };
